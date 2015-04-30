@@ -298,7 +298,7 @@ class format_simple_renderer extends format_topics_renderer {
 					// Display link itself.
 
 					// resize mimetype icons to a proper size
-					$iconurl = simple_get_icon_url($mod, $modnumber);
+					$iconurl = simple_get_icon_url($mod, $modnumber, $iconsize);
 					$pattern = '/f\/[a-zA-Z0-9]*-(\d+)\D*$/';
 					preg_match($pattern, $iconurl, $matches);
 					if ($matches) {

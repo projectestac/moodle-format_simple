@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot. '/course/format/lib.php');
+require_once($CFG->dirroot.'/course/format/simple/renderer.php');
 require_once($CFG->dirroot. '/course/format/topics/lib.php');
 
 /**
@@ -228,20 +229,29 @@ function simple_get_current_icon_url($modname, $instanceid) {
 }
 
 // Retorna la url de la icona
-function simple_get_icon_url($mod, $instanceid = false) {
+function simple_get_icon_url($mod, $instanceid = false, $iconsize = format_simple_renderer::DEFAULTICONSIZE) {
     if ($instanceid && $icon = simple_get_current_icon_url($mod->modname, $instanceid)) {
         return $icon;
     }
-    return simple_get_default_icon_url($mod);
+    return simple_get_default_icon_url($mod, $iconsize);
 }
 
-function simple_get_default_icon_url($mod) {
+function simple_get_default_icon_url($mod, $iconsize = format_simple_renderer::DEFAULTICONSIZE) {
     global $OUTPUT;
     // Support modules setting their own, external, icon image
     if (empty($mod->iconurl) && empty($mod->icon)) {
         return $OUTPUT->pix_url('icon', $mod->modname);
     }
-    return $mod->get_icon_url();
+    $iconurl = $mod->get_icon_url();
+    if ($mod->modname == 'resource') {
+        $resicon = explode('-', $iconurl->param('image'), 2);
+        if (isset($resicon[1]) && $resicon[1] == 24) {
+            $resicon[1] = $iconsize;
+            $iconurl->param('image', implode('-', $resicon));
+        }
+
+    }
+    return $iconurl;
 }
 
 // Updates the selected imatge to the course module from the form
@@ -352,7 +362,7 @@ function simple_coursemodule_elements(&$mform, $mod) {
 
     $instanceid = isset($_GET["update"]) ? $_GET["update"] : false;
 
-    $defaulticon = simple_get_default_icon_url($mod, $instanceid);
+    $defaulticon = simple_get_default_icon_url($mod);
     $currenticon = simple_get_current_icon_url($modname, $instanceid);
 
     // Opcions de les icones a triar
