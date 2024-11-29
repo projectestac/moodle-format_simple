@@ -416,19 +416,22 @@ function simple_get_icon_url($mod, $instanceid = false, $iconsize = format_simpl
 
 function simple_get_default_icon_url($mod, $iconsize = format_simple_renderer::DEFAULTICONSIZE) {
     global $OUTPUT;
+
     // Support modules setting their own, external, icon image
     if (empty($mod->iconurl) && empty($mod->icon)) {
         return $OUTPUT->image_url('icon', $mod->modname);
     }
+
     $iconurl = $mod->get_icon_url();
-    if ($mod->modname == 'resource') {
+
+    if ($mod->modname === 'resource') {
         $resicon = explode('-', $iconurl->param('image'), 2);
-        if (isset($resicon[1]) && $resicon[1] == 24) {
+        if (isset($resicon[1]) && (int)$resicon[1] === 24) {
             $resicon[1] = $iconsize;
             $iconurl->param('image', implode('-', $resicon));
         }
-
     }
+
     return $iconurl;
 }
 
@@ -527,15 +530,10 @@ function simple_coursemodule_elements(&$mform, $mod) {
     global $CFG, $PAGE, $DB, $USER;
 
     $courseid = $mod->course;
-    $modname = $mod->modname;
-
-    if ($modname === 'label') {
-        return;
-    }
 
     $mform->addElement('header', 'simple_iconhdr', get_string('icon', 'format_simple'));
 
-    $instanceid = isset($_GET['update']) ? $_GET['update'] : false;
+    $instanceid = $_GET['update'] ?? false;
 
     $defaulticon = simple_get_default_icon_url($mod);
     $currenticon = simple_get_current_icon_url($instanceid);

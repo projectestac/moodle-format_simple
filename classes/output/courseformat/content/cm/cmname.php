@@ -49,6 +49,12 @@ class cmname extends cmname_base {
 
         $data = parent::export_for_template($output);
 
+        if ($mod->modname === 'label') {
+            $data['content'] = $mod->content;
+            $data['iconclass'] = '';
+            return $data;
+        }
+
         if (!$userisediting) {
             global $CFG;
             require_once $CFG->dirroot . '/course/format/simple/lib.php';
@@ -61,7 +67,7 @@ class cmname extends cmname_base {
         }
 
         $data['iconclass'] = '';
- 
+
         return $data;
 
     }

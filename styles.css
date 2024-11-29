@@ -173,6 +173,14 @@
     font-size: 1.2em;
 }
 
+.course-content ul.simple div.format-simple-label div.media-body div.activityname {
+    margin: 0 40px;
+}
+
+.course-content ul.simple div.media-body div.content {
+    text-align: justify;
+}
+
 #def_img.simple-bigicon {
     width: 128px;
     height: 128px;
