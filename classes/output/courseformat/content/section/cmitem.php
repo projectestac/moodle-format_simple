@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Simple Format.
+ * Output cmitem for the format_simple plugin.
  *
  * @package   format_simple
  * @copyright 2012 onwards UPCnet / IThinkUPC
@@ -25,19 +25,20 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace format_simple\output\courseformat\content;
+namespace format_simple\output\courseformat\content\section;
 
-use core_courseformat\output\local\content\cm as base_cm;
+use core_courseformat\output\local\content\section\cmitem as base_cmitem;
 
-class cm extends base_cm
-{
+class cmitem extends base_cmitem {
+
     /**
      * Returns the output class template path.
      *
-     * This method redirects the default template when the course section is rendered.
+     * This method redirects the default template when the section activity item is rendered.
      */
     public function get_template_name(\renderer_base $renderer): string
     {
-        return 'format_simple/local/content/cm';
+        return 'format_simple/local/content/section/cmitem';
     }
+
 }

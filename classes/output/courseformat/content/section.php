@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Simple Format.
+ * Output section for the format_pluginname plugin.
  *
  * @package   format_simple
  * @copyright 2012 onwards UPCnet / IThinkUPC
@@ -27,9 +27,9 @@
 
 namespace format_simple\output\courseformat\content;
 
-use core_courseformat\output\local\content\cm as base_cm;
+use core_courseformat\output\local\content\section as base_section;
 
-class cm extends base_cm
+class section extends base_section
 {
     /**
      * Returns the output class template path.
@@ -38,6 +38,6 @@ class cm extends base_cm
      */
     public function get_template_name(\renderer_base $renderer): string
     {
-        return 'format_simple/local/content/cm';
+        return 'format_simple/local/content/section';
     }
 }
