@@ -54,10 +54,6 @@
     overflow: auto !important;
 }
 
-.course-content ul.simple li.section .content {
-    margin: 0 40px;
-}
-
 .course-content ul.simple li.section .left {
     width: 40px;
     float: left;
@@ -83,6 +79,11 @@
     min-height: 190px;
 }
 
+.course-content ul.simple li.section div.section-item ul.section li.activity.modtype_label,
+.course-content ul.simple li.section div.section-item ul.section li.activity.modtype_subsection {
+    min-height: 20px !important;
+}
+
 .course-content ul.simple li.section .summary {
     font-size: 1.2em;
 }
@@ -91,9 +92,15 @@
 .course-content ul.simple .activity {
     text-align: center;
     float: left;
-    margin: 0 20px 20px 0;
+    margin: 0 10px 0 80px;
+    padding: 0;
     clear: none;
     width: 175px;
+}
+
+.course-content ul.simple li.activity.modtype_label,
+.course-content ul.simple li.activity.modtype_subsection {
+    margin: 0;
 }
 
 .course-content ul.simple .activity.size_128 {
