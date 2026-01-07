@@ -595,7 +595,7 @@ function simple_get_default_icon_url($mod, $iconsize = format_simple_renderer::D
     $iconurl = $mod->get_icon_url();
 
     if ($mod->modname === 'resource') {
-        $resicon = explode('-', $iconurl->param('image'), 2);
+        $resicon = explode('-', $iconurl->param('image') ?? '', 2);
         if (isset($resicon[1]) && (int)$resicon[1] === 24) {
             $resicon[1] = $iconsize;
             $iconurl->param('image', implode('-', $resicon));

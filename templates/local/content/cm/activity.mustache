@@ -87,23 +87,10 @@
         {{/cmname}}
     {{/hasname}}
 
-    {{! Dates }}
-    {{#dates}}
-        {{#hasdates}}
-            <div data-region="activity-dates" class="activity-dates me-sm-2">
-                {{#activitydates}}
-                    {{$core_course/activity_date}}
-                        {{>format_simple/activity_date}}
-                    {{/core_course/activity_date}}
-                {{/activitydates}}
-            </div>
-        {{/hasdates}}
-    {{/dates}}
-
     {{! Visibility }}
-    {{$ core_courseformat/local/content/cm/badges }}
-        {{> core_courseformat/local/content/cm/badges }}
-    {{/ core_courseformat/local/content/cm/badges }}
+    {{$ core_courseformat/local/content/cm/visibility }}
+        {{> format_simple/local/content/cm/visibility }}
+    {{/ core_courseformat/local/content/cm/visibility }}
 
     {{! Group mode }}
     {{#groupmodeinfo}}
@@ -136,13 +123,6 @@
             {{/ core_courseformat/local/content/cm/controlmenu }}
         </div>
     {{/controlmenu}}
-
-    {{! Description }}
-    {{#altcontent}}
-        <div class="activity-altcontent text-break {{#hasname}}activity-description{{/hasname}}">
-            {{{altcontent}}}
-        </div>
-    {{/altcontent}}
 
     {{! Availability }}
     {{#modavailability}}
