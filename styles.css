@@ -40,8 +40,9 @@
     text-align: center;
 }
 
-.course-content ul.simple {
-    margin: 0;
+.course-content ul.simple li.section div.section-item ul.section {
+    display: flex !important;
+    flex-wrap: wrap;
 }
 
 .course-content ul.simple li.section {
