@@ -30,15 +30,33 @@
         "showtooltip": 1
     }
 }}
-<div class="activity-icon activityiconcontainer {{purpose}} {{#branded}}isbranded{{/branded}} courseicon align-self-start"
-     style="width: {{iconsize}}px; height: {{iconsize}}px; max-width: none; max-height: none;">
-    <img
-        style="width: {{iconsize}}px; height: {{iconsize}}px; max-width: none; max-height: none;"
-        src="{{{icon}}}"
-        class="activityicon {{iconclass}}"
-        data-region="activity-icon"
-        data-id="{{cmid}}"
-        alt="{{#showtooltip}}{{#cleanstr}} activityicon, moodle, {{{pluginname}}} {{/cleanstr}}{{/showtooltip}}"
-        {{#showtooltip}}title="{{{pluginname}}}"{{/showtooltip}}
-    >
-</div>
+
+{{#customiconurl}}
+    <div class="activity-icon {{purpose}} {{#branded}}isbranded{{/branded}} courseicon align-self-start"
+         style="width: {{iconsize}}px; height: {{iconsize}}px; max-width: none; max-height: none;">
+        <img
+            style="width: {{iconsize}}px; height: {{iconsize}}px; max-width: none; max-height: none;"
+            src="{{{customiconurl}}}"
+            class="activityicon {{iconclass}}"
+            data-region="activity-icon"
+            data-id="{{cmid}}"
+            alt="{{#showtooltip}}{{#cleanstr}} activityicon, moodle, {{{pluginname}}} {{/cleanstr}}{{/showtooltip}}"
+            {{#showtooltip}}title="{{{pluginname}}}"{{/showtooltip}}
+        >
+    </div>
+{{/customiconurl}}
+
+{{^customiconurl}}
+    <div class="activity-icon activityiconcontainer {{purpose}} {{#branded}}isbranded{{/branded}} courseicon align-self-start"
+         style="width: {{iconsize}}px; height: {{iconsize}}px; max-width: none; max-height: none;">
+        <img
+            style="width: {{iconsize}}px; height: {{iconsize}}px; max-width: none; max-height: none;"
+            src="{{{icon}}}"
+            class="activityicon {{iconclass}}"
+            data-region="activity-icon"
+            data-id="{{cmid}}"
+            alt="{{#showtooltip}}{{#cleanstr}} activityicon, moodle, {{{pluginname}}} {{/cleanstr}}{{/showtooltip}}"
+            {{#showtooltip}}title="{{{pluginname}}}"{{/showtooltip}}
+        >
+    </div>
+{{/customiconurl}}

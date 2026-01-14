@@ -33,7 +33,7 @@ require_once $CFG->dirroot . '/course/format/topics/lib.php';
 use format_simple\output\renderer as format_simple_renderer;
 
 /**
- * Main class for the Simple Topics course format
+ * Main class for the Simple Topics course format.
  */
 class format_simple extends core_courseformat\base
 {
@@ -47,11 +47,21 @@ class format_simple extends core_courseformat\base
         return true;
     }
 
+    /**
+     * Returns true if this course format uses course index.
+     *
+     * @return bool
+     */
     public function uses_course_index(): bool
     {
         return true;
     }
 
+    /**
+     * Returns true if this course format uses indentation.
+     *
+     * @return bool
+     */
     public function uses_indentation(): bool
     {
         return false;
@@ -60,9 +70,8 @@ class format_simple extends core_courseformat\base
     /**
      * Returns the display name of the given section that the course prefers.
      *
-     * Use section name is specified by user. Otherwise, use default ("Topic #").
-     *
-     * @param int|stdClass $section Section object from database or just field section.section
+     * @param int|stdClass|section_info $section Section object from database or just field course_sections.section
+     * @throws coding_exception
      * @throws moodle_exception
      * @return string Display name that the course format prefers, e.g. "Topic 2"
      */
@@ -162,6 +171,11 @@ class format_simple extends core_courseformat\base
         return $ajaxsupport;
     }
 
+    /**
+     * Returns whether this format supports course components.
+     *
+     * @return bool
+     */
     public function supports_components(): bool
     {
         return true;
@@ -478,7 +492,7 @@ class format_simple extends core_courseformat\base
      * @throws moodle_exception
      * @return null|array any data for the Javascript post-processor (must be json-encodeable)
      */
-    public function section_action($section, $action, $sr)
+    public function section_action($section, $action, $sr): ?array
     {
         global $PAGE;
 
@@ -507,6 +521,7 @@ class format_simple extends core_courseformat\base
     /**
      * Return the plugin configs for external functions.
      *
+     * @throws dml_exception
      * @return array the list of configuration settings
      * @since Moodle 3.5
      */
@@ -520,7 +535,24 @@ class format_simple extends core_courseformat\base
 
 }
 
-function format_simple_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload): bool
+/**
+ * Serve the requested file for the format_simple plugin.
+ *
+ * @param stdClass $course the course object
+ * @param stdClass $cm the course module object
+ * @param stdClass $context the context
+ * @param string $filearea the name of the file area
+ * @param array $args extra arguments (itemid, path)
+ * @param bool $forcedownload whether force download
+ * @param array $options additional options affecting the file serving
+ *
+ * @throws coding_exception
+ * @throws moodle_exception
+ * @throws require_login_exception
+ *
+ * @return bool false if the file not found, just send the file otherwise and do not return anything
+ */
+function format_simple_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options): bool
 {
     if ($context->contextlevel !== CONTEXT_MODULE) {
         return false;
@@ -530,7 +562,11 @@ function format_simple_pluginfile($course, $cm, $context, $filearea, $args, $for
         return false;
     }
 
-    array_shift($args); // ignore revision - designed to prevent caching problems only
+    // Make sure the user is logged in and has access to the module context.
+    require_login($course);
+
+    // The args is an array containing [itemid, path]. Remove itemid.
+    array_shift($args);
 
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
@@ -538,12 +574,19 @@ function format_simple_pluginfile($course, $cm, $context, $filearea, $args, $for
     $file = $fs->get_file_by_hash(sha1($fullpath));
 
     // Finally, send the file.
-    send_stored_file($file, 86400, 0, false);
+    send_stored_file($file, 86400, 0, false, $options);
 
     return true;
 }
 
-function simple_get_current_icon($instanceid): stored_file|bool|null
+/**
+ * Returns the current icon file for the course module.
+ *
+ * @param int $instanceid Id del course module
+ * @throws coding_exception
+ * @return stored_file|bool|null
+ */
+function simple_get_current_icon(int $instanceid): stored_file|bool|null
 {
     $context = context_module::instance($instanceid, IGNORE_MISSING);
 
@@ -562,7 +605,14 @@ function simple_get_current_icon($instanceid): stored_file|bool|null
     return false;
 }
 
-function simple_get_current_icon_url($instanceid)
+/**
+ * Returns the current icon URL for the course module.
+ *
+ * @param int $instanceid Id del course module
+ * @throws coding_exception
+ * @return string|bool
+ */
+function simple_get_current_icon_url(int $instanceid): bool|string
 {
     global $CFG;
 
@@ -574,8 +624,17 @@ function simple_get_current_icon_url($instanceid)
     return false;
 }
 
-// Retorna l'URL de la icona
-function simple_get_icon_url($mod, $instanceid = false, $iconsize = format_simple_renderer::DEFAULTICONSIZE)
+/**
+ * Returns the icon URL (Moodle default or custom icon) for the course module.
+ *
+ * @param cm_info|stdClass $mod Course
+ * @param bool|int $instanceid Id del course module
+ * @param int $iconsize Size of the icon
+ * @throws coding_exception
+ * @return moodle_url|bool|string
+ */
+function simple_get_icon_url(cm_info|stdClass $mod, bool|int $instanceid = false,
+                             int $iconsize = format_simple_renderer::DEFAULTICONSIZE): moodle_url|bool|string
 {
     if ($instanceid && $icon = simple_get_current_icon_url($instanceid)) {
         return $icon;
@@ -583,7 +642,15 @@ function simple_get_icon_url($mod, $instanceid = false, $iconsize = format_simpl
     return simple_get_default_icon_url($mod, $iconsize);
 }
 
-function simple_get_default_icon_url($mod, $iconsize = format_simple_renderer::DEFAULTICONSIZE)
+/**
+ * Returns the Moodle default icon URL for the course module.
+ *
+ * @param stdClass $mod Course
+ * @param int $iconsize Size of the icon
+ * @throws coding_exception
+ * @return moodle_url
+ */
+function simple_get_default_icon_url($mod, $iconsize = format_simple_renderer::DEFAULTICONSIZE): moodle_url
 {
     global $OUTPUT;
 
@@ -605,46 +672,63 @@ function simple_get_default_icon_url($mod, $iconsize = format_simple_renderer::D
     return $iconurl;
 }
 
-// Updates the selected imatge to the course module from the form
-function simple_update_module_image($data)
+/**
+ * Updates the module image according to the form data.
+ *
+ * @param stdClass $data
+ * @throws coding_exception
+ * @throws file_exception
+ * @return void
+ */
+function simple_update_module_image(stdClass $data): void
 {
-    if ($data->simple_image == 0 && (!isset($data->default_image) || $data->default_image == 'current')) {
-        // It's not necessary to change current image
+    if ($data->simple_image === '0' && (!isset($data->default_image) || $data->default_image === 'current')) {
+        // It's not necessary to change current image.
         return;
     }
 
-    // First, try to erase current image if current is not selected
-    if ($data->simple_image == 0 && isset($data->default_image) && $data->default_image != 'current') {
+    // First, try to erase the current image if current is not selected.
+    if ($data->simple_image === '0' && isset($data->default_image) && $data->default_image !== 'current') {
         simple_delete_module_image($data->coursemodule);
     }
 
-    // Then copy the image selected to the module space
+    // Then copy the image selected to the module space.
     simple_add_module_image($data);
 }
 
-// Adds the selected imatge to the course module from the form
-function simple_add_module_image($data)
+/**
+ * Adds the module image according to the form data.
+ *
+ * @param $data
+ * @throws coding_exception
+ * @throws file_exception
+ * @throws stored_file_creation_exception
+ * @return void
+ */
+function simple_add_module_image($data): void
 {
     global $CFG, $USER;
 
     $cmid = $data->coursemodule;
 
-    if ($data->simple_image == 0) {
+    // $data->simple_image === 0 means default image selected
+    // $data->simple_image === 1 means custom image uploaded
+    if ($data->simple_image === '0') {
         // Copy file if default is not selected
-        if ($data->default_image != 'default') {
+        if (isset($data->default_image)) {
             // Copy the file from $data->default_image
             $fs = get_file_storage();
             $context = context_module::instance($cmid);
-            $component = 'format_simple';
-            $filearea = 'bigicon';
+
             // Prepare file record object
-            $fileinfo = array(
-                'contextid' => $context->id, // ID of context
-                'component' => $component,     // usually = table name
-                'filearea' => $filearea,     // usually = table name
-                'itemid' => 0,               // usually = ID of row in table
-                'filepath' => '/',           // any path beginning and ending in /
-                'userid' => $USER->id); // any filename
+            $fileinfo = [
+                'contextid' => $context->id,
+                'component' => 'format_simple',
+                'filearea' => 'bigicon',
+                'itemid' => 0,
+                'filepath' => '/',
+                'userid' => $USER->id,
+                ];
 
             if (str_starts_with($data->default_image, 'subject/')) {
                 $fileinfo['filename'] = $data->default_image;
@@ -663,24 +747,29 @@ function simple_add_module_image($data)
         return;
     }
 
-    // Personalized image uploaded
-    $fs = get_file_storage();
+    // Custom image uploaded.
     $context = context_module::instance($cmid);
 
     $component = 'format_simple';
     $filearea = 'bigicon';
     $draftitemid = $data->simple_icon;
 
-    $fileoptions = array('subdirs' => false, 'maxfiles' => 1, 'accepted_types' => 'image');
+    $fileoptions = ['subdirs' => false, 'maxfiles' => 1, 'accepted_types' => 'image'];
     if ($draftitemid) {
         file_save_draft_area_files($draftitemid, $context->id, $component, $filearea, 0, $fileoptions);
     }
-    return;
 
 }
 
-// Deletes the selected imatge to the course module from the form
-function simple_delete_module_image($cmid, $context = false)
+/**
+ * Deletes the selected imatge to the course module from the form.
+ *
+ * @param $cmid
+ * @param bool $context
+ * @throws coding_exception
+ * @return void
+ */
+function simple_delete_module_image($cmid, bool $context = false): void
 {
     if (!$context) {
         $context = context_module::instance($cmid, IGNORE_MISSING);
@@ -690,7 +779,8 @@ function simple_delete_module_image($cmid, $context = false)
         $fs = get_file_storage();
         $component = 'format_simple';
         $filearea = 'bigicon';
-        // Erase current image
+
+        // Delete current image.
         $files = $fs->get_area_files($context->id, $component, $filearea);
         foreach ($files as $file) {
             $file->delete();
@@ -698,7 +788,17 @@ function simple_delete_module_image($cmid, $context = false)
     }
 }
 
-function simple_coursemodule_elements(&$mform, $mod)
+/**
+ * Adds the form elements to select/upload the course module image. Called from
+ * course modedit formto add the image selection elements.
+ *
+ * @param MoodleQuickForm $mform
+ * @param stdClass $mod
+ * @throws coding_exception
+ * @throws dml_exception
+ * @return void
+ */
+function simple_coursemodule_elements(MoodleQuickForm $mform, stdClass $mod): void
 {
     global $CFG, $PAGE, $DB, $USER;
 
@@ -706,12 +806,11 @@ function simple_coursemodule_elements(&$mform, $mod)
 
     $mform->addElement('header', 'simple_iconhdr', get_string('icon', 'format_simple'));
 
-    $instanceid = $_GET['update'] ?? false;
+    $instanceid = optional_param('update', false, PARAM_INT);
 
-    $defaulticon = simple_get_default_icon_url($mod);
+    $defaulticon = simple_get_icon_url($mod);
     $currenticon = simple_get_current_icon_url($instanceid);
 
-    // Opcions de les icones a triar
     $iconoptions = [];
     $iconsurl = [];
     $iconshash = [];
@@ -765,6 +864,7 @@ function simple_coursemodule_elements(&$mform, $mod)
         'filearea' => $filearea,
         'userid' => $USER->id,
     ];
+
     if (!empty($actcontexts)) {
         $contexts = implode(',', $actcontexts);
         $select = 'component = :component AND filearea = :filearea AND (contextid IN(' . $contexts . ') OR userid = :userid)';

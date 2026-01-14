@@ -65,6 +65,10 @@ class cmname extends cmname_base
 
             $data['iconsize'] = $iconsize;
             $data['icon'] = $newicon;
+
+            if (is_string($newicon)) {
+                $data['customiconurl'] = $newicon;
+            }
         }
 
         $data['iconclass'] = '';
