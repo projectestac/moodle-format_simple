@@ -734,13 +734,6 @@ function simple_add_module_image($data): void
                 $fileinfo['filename'] = $data->default_image;
                 $frompath = "$CFG->dirroot/course/format/simple/pix/" . $data->default_image;
                 $fs->create_file_from_pathname($fileinfo, $frompath);
-            } else {
-                // Copy only in the database!
-                $file = $fs->get_file_by_id($data->default_image);
-                if ($file) {
-                    $fileinfo['filename'] = $file->get_filename();
-                    $fs->create_file_from_storedfile($fileinfo, $file->get_id());
-                }
             }
         }
 
