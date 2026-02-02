@@ -758,11 +758,11 @@ function simple_add_module_image($data): void
  * Deletes the selected imatge to the course module from the form.
  *
  * @param $cmid
- * @param bool $context
+ * @param bool|\core\context\module $context
  * @throws coding_exception
  * @return void
  */
-function simple_delete_module_image($cmid, bool $context = false): void
+function simple_delete_module_image($cmid, bool|\core\context\module $context = false): void
 {
     if (!$context) {
         $context = context_module::instance($cmid, IGNORE_MISSING);
